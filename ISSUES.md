@@ -88,9 +88,9 @@
 ---
 
 ## Phase 2 — Depth
-- [ ] **IV-53** — View modes: Latency, Cost, Traffic, Incident + legend
-- [ ] **IV-54** — Traffic-particle animation along edges
-- [ ] **IV-55** — Animation / transition polish pass
+- [x] **IV-53** — View modes: Latency, Cost, Traffic, Incident + gradient legend
+- [x] **IV-54** — Traffic-particle animation along edges (instanced)
+- [x] **IV-55** — Animation polish — smooth colour & opacity lerps on view-mode change
 
 ## Phase 3 — Upload
 - [ ] **IV-56** — `validation.ts`: JSON architecture schema validation
@@ -109,5 +109,6 @@
 
 ## Progress
 
-- **Phase 1:** 52 / 52 issues — 🎉 fully complete
-- **Total:** 52 / 64 issues
+- **Phase 1:** 52 / 52 — 🎉 complete
+- **Phase 2:** 3 / 3 — 🎉 complete
+- **Total:** 55 / 64

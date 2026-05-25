@@ -7,26 +7,31 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { useInfrastructureStore } from "@/store/infrastructure-store";
 import { buildAdjacency, getNeighbours, getNodeMap } from "@/lib/graph-utils";
 import { isFilterActive, matchesFilter } from "@/lib/node-filter";
+import { computeRanges, getNodeAppearance } from "@/lib/view-mode";
 import { CameraRig } from "./camera-rig";
 import { ConnectionLine, type EdgeRenderState } from "./connection-line";
 import { ServiceNodeMesh } from "./service-node-mesh";
+import { TrafficParticles } from "./traffic-particles";
 
 const GRAPH_CENTER: [number, number, number] = [0, 4, 0];
 const DEFAULT_CAMERA: [number, number, number] = [0, 13, 27];
 const BG_COLOR = "#0f141b";
 
-/** Renders the graph from the store, with selection- and filter-driven emphasis. */
+/** Renders the graph from the store, with selection-, filter-, and view-mode-
+ *  driven appearance. */
 function SceneContents() {
   const nodes = useInfrastructureStore((s) => s.nodes);
   const edges = useInfrastructureStore((s) => s.edges);
   const selectedId = useInfrastructureStore((s) => s.selectedId);
   const simulationOverlay = useInfrastructureStore((s) => s.simulationOverlay);
+  const viewMode = useInfrastructureStore((s) => s.viewMode);
   const searchQuery = useInfrastructureStore((s) => s.searchQuery);
   const statusFilter = useInfrastructureStore((s) => s.statusFilter);
   const typeFilter = useInfrastructureStore((s) => s.typeFilter);
 
   const nodeMap = useMemo(() => getNodeMap(nodes), [nodes]);
   const adjacency = useMemo(() => buildAdjacency(edges), [edges]);
+  const ranges = useMemo(() => computeRanges(nodes), [nodes]);
 
   /** Selected node + its direct neighbours — everything else dims (IV-32). */
   const highlightSet = useMemo(() => {
@@ -75,15 +80,25 @@ function SceneContents() {
           />
         );
       })}
+
+      <TrafficParticles edges={edges} nodeMap={nodeMap} />
+
       {nodes.map((node) => {
         const filteredOut = matchSet !== null && !matchSet.has(node.id);
         const selectionDimmed =
           highlightSet !== null && !highlightSet.has(node.id);
+        const appearance = getNodeAppearance(
+          node,
+          viewMode,
+          simulationOverlay,
+          ranges,
+        );
         return (
           <ServiceNodeMesh
             key={node.id}
             node={node}
-            status={simulationOverlay[node.id] ?? node.status}
+            color={appearance.color}
+            pulseSpeed={appearance.pulseSpeed}
             selected={selectedId === node.id}
             dimmed={filteredOut || selectionDimmed}
           />

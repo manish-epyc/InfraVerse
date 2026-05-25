@@ -3,27 +3,14 @@
 import { useRef } from "react";
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import { Billboard, Html } from "@react-three/drei";
-import type { Group, Mesh, MeshStandardMaterial } from "three";
+import {
+  Color,
+  type Group,
+  type Mesh,
+  type MeshStandardMaterial,
+} from "three";
 import { useInfrastructureStore } from "@/store/infrastructure-store";
-import type {
-  ServiceNode,
-  ServiceStatus,
-  ServiceType,
-} from "@/features/infrastructure/types";
-
-/** Status → node colour (Health view mode). Mirrors the CSS status palette. */
-const STATUS_COLOR: Record<ServiceStatus, string> = {
-  healthy: "#3ecf8e",
-  warning: "#e6b53d",
-  critical: "#e5484d",
-};
-
-/** Status → emissive pulse speed (0 = steady glow). PRD §14.3. */
-const PULSE_SPEED: Record<ServiceStatus, number> = {
-  healthy: 0,
-  warning: 2.2,
-  critical: 5,
-};
+import type { ServiceNode, ServiceType } from "@/features/infrastructure/types";
 
 /** Per-type primitive geometry (D6, §14.2) — no imported model files. */
 function NodeGeometry({ type }: { type: ServiceType }) {
@@ -51,27 +38,54 @@ function NodeGeometry({ type }: { type: ServiceType }) {
 
 type Props = {
   node: ServiceNode;
-  /** Effective status — base status overlaid with any simulation result (D2f). */
-  status: ServiceStatus;
+  /** Target colour (driven by the active view mode). */
+  color: string;
+  /** Emissive pulse speed; 0 = steady glow. */
+  pulseSpeed: number;
   selected: boolean;
   dimmed: boolean;
 };
 
-/** A single infrastructure node — mesh, status glow, label, and interaction. */
-export function ServiceNodeMesh({ node, status, selected, dimmed }: Props) {
+/** A single infrastructure node — mesh, glow, label, and interaction.
+ *  Colour and opacity smoothly lerp toward the target each frame (IV-55). */
+export function ServiceNodeMesh({
+  node,
+  color,
+  pulseSpeed,
+  selected,
+  dimmed,
+}: Props) {
   const groupRef = useRef<Group>(null);
   const meshRef = useRef<Mesh>(null);
   const hovered = useInfrastructureStore((s) => s.hoveredId === node.id);
   const select = useInfrastructureStore((s) => s.select);
   const setHovered = useInfrastructureStore((s) => s.setHovered);
 
-  const color = STATUS_COLOR[status];
-  const pulseSpeed = PULSE_SPEED[status];
+  /** Current rendered colour — lerped toward the prop colour each frame. */
+  const currentColor = useRef(new Color(color));
+  const targetColor = useRef(new Color(color));
+  targetColor.current.set(color);
+
+  /** Current rendered opacity — lerped toward the dim target each frame. */
+  const currentOpacity = useRef(dimmed ? 0.16 : 1);
+  const targetOpacity = dimmed ? 0.16 : 1;
 
   useFrame((state, delta) => {
     const mesh = meshRef.current;
     if (mesh) {
       const material = mesh.material as MeshStandardMaterial;
+
+      currentColor.current.lerp(
+        targetColor.current,
+        Math.min(1, delta * 4.5),
+      );
+      material.color.copy(currentColor.current);
+      material.emissive.copy(currentColor.current);
+
+      currentOpacity.current +=
+        (targetOpacity - currentOpacity.current) * Math.min(1, delta * 6);
+      material.opacity = currentOpacity.current;
+
       if (pulseSpeed > 0) {
         const pulse =
           0.5 + 0.5 * Math.sin(state.clock.elapsedTime * pulseSpeed);
@@ -80,6 +94,7 @@ export function ServiceNodeMesh({ node, status, selected, dimmed }: Props) {
         material.emissiveIntensity = 0.42;
       }
     }
+
     const group = groupRef.current;
     if (group) {
       const target = hovered || selected ? 1.16 : 1;
@@ -122,7 +137,7 @@ export function ServiceNodeMesh({ node, status, selected, dimmed }: Props) {
           emissiveIntensity={0.42}
           roughness={0.3}
           metalness={0.2}
-          transparent={dimmed}
+          transparent
           opacity={dimmed ? 0.16 : 1}
         />
       </mesh>
@@ -138,7 +153,7 @@ export function ServiceNodeMesh({ node, status, selected, dimmed }: Props) {
 
       <Html position={[0, 1.25, 0]} center distanceFactor={15}>
         <div
-          className="pointer-events-none select-none whitespace-nowrap rounded border border-border/70 bg-background/85 px-1.5 py-0.5 text-[11px] font-medium text-foreground/90"
+          className="pointer-events-none select-none whitespace-nowrap rounded border border-border/70 bg-background/85 px-1.5 py-0.5 text-[11px] font-medium text-foreground/90 transition-opacity duration-300"
           style={{ opacity: dimmed ? 0.25 : 1 }}
         >
           {node.name}
