@@ -34,6 +34,7 @@ export function ViewModeSwitcher() {
             key={mode.id}
             type="button"
             onClick={() => setViewMode(mode.id)}
+            aria-pressed={viewMode === mode.id}
             className={cn(
               "rounded-md border px-2 py-1.5 text-[11px] transition-colors",
               viewMode === mode.id

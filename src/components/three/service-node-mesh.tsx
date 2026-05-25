@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import { Billboard, Html } from "@react-three/drei";
 import {
@@ -9,6 +9,9 @@ import {
   type Mesh,
   type MeshStandardMaterial,
 } from "three";
+
+/** Reusable Color scratch — avoids per-frame allocations during the lerp. */
+const SCRATCH_COLOR = new Color();
 import { useInfrastructureStore } from "@/store/infrastructure-store";
 import type { ServiceNode, ServiceType } from "@/features/infrastructure/types";
 
@@ -61,27 +64,24 @@ export function ServiceNodeMesh({
   const select = useInfrastructureStore((s) => s.select);
   const setHovered = useInfrastructureStore((s) => s.setHovered);
 
-  /** Current rendered colour — lerped toward the prop colour each frame. */
-  const currentColor = useRef(new Color(color));
-  const targetColor = useRef(new Color(color));
-  targetColor.current.set(color);
+  /** Stable Color instance that lerps toward the prop each frame (D11 / IV-55).
+   *  Lazy-initialised via useState so we never mutate a ref during render. */
+  const [currentColor] = useState(() => new Color(color));
 
-  /** Current rendered opacity — lerped toward the dim target each frame. */
-  const currentOpacity = useRef(dimmed ? 0.16 : 1);
-  const targetOpacity = dimmed ? 0.16 : 1;
+  /** Current opacity — mutated only inside useFrame. */
+  const currentOpacity = useRef(1);
 
   useFrame((state, delta) => {
     const mesh = meshRef.current;
     if (mesh) {
       const material = mesh.material as MeshStandardMaterial;
 
-      currentColor.current.lerp(
-        targetColor.current,
-        Math.min(1, delta * 4.5),
-      );
-      material.color.copy(currentColor.current);
-      material.emissive.copy(currentColor.current);
+      SCRATCH_COLOR.set(color);
+      currentColor.lerp(SCRATCH_COLOR, Math.min(1, delta * 4.5));
+      material.color.copy(currentColor);
+      material.emissive.copy(currentColor);
 
+      const targetOpacity = dimmed ? 0.16 : 1;
       currentOpacity.current +=
         (targetOpacity - currentOpacity.current) * Math.min(1, delta * 6);
       material.opacity = currentOpacity.current;

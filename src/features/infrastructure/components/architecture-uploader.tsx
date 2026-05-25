@@ -87,6 +87,7 @@ export function ArchitectureUploader() {
       <div
         role="button"
         tabIndex={0}
+        aria-label="Upload a JSON architecture file"
         onClick={() => inputRef.current?.click()}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
