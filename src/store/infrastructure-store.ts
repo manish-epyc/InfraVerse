@@ -10,6 +10,7 @@
 
 import { create } from "zustand";
 import type {
+  ArchitectureGraph,
   EventLog,
   EventLogType,
   Incident,
@@ -79,6 +80,7 @@ type InfrastructureState = {
   runScenario: (preset: SimulationPreset) => void;
   failNode: (nodeId: string) => void;
   resetSimulation: () => void;
+  loadGraph: (graph: ArchitectureGraph) => void;
 };
 
 export const useInfrastructureStore = create<InfrastructureState>()(
@@ -198,6 +200,26 @@ export const useInfrastructureStore = create<InfrastructureState>()(
         incidentTitle: `${node.name} is down`,
         description: `${node.name} has gone offline. Services that depend on it are degraded.`,
         suggestedAction: `Investigate ${node.name} and restore the service.`,
+      });
+    },
+
+    /** Replaces the active graph with an uploaded architecture (M13 / D5).
+     *  Clears all transient state — selection, filters, sim, logs. */
+    loadGraph: (graph) => {
+      pendingTimers.forEach(clearTimeout);
+      pendingTimers = [];
+      set({
+        nodes: graph.nodes,
+        edges: graph.edges,
+        logs: [],
+        selectedId: null,
+        hoveredId: null,
+        searchQuery: "",
+        statusFilter: [],
+        typeFilter: [],
+        viewMode: "health",
+        activeIncident: null,
+        simulationOverlay: {},
       });
     },
 

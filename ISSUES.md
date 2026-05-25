@@ -93,10 +93,10 @@
 - [x] **IV-55** — Animation polish — smooth colour & opacity lerps on view-mode change
 
 ## Phase 3 — Upload
-- [ ] **IV-56** — `validation.ts`: JSON architecture schema validation
-- [ ] **IV-57** — Auto-layout for position-less uploaded nodes (D1)
-- [ ] **IV-58** — `/upload` page: drop zone, error list, sample download
-- [ ] **IV-59** — Load uploaded graph into store → route to command center
+- [x] **IV-56** — `validation.ts`: JSON architecture schema validation
+- [x] **IV-57** — Auto-layout for position-less uploaded nodes (D1)
+- [x] **IV-58** — `/upload` page: drop zone, error list, sample download
+- [x] **IV-59** — Load uploaded graph into store → route to `/command-center`
 
 ## Phase 4 — Ship
 - [ ] **IV-60** — Accessibility pass: keyboard nav, ARIA, contrast
@@ -111,4 +111,5 @@
 
 - **Phase 1:** 52 / 52 — 🎉 complete
 - **Phase 2:** 3 / 3 — 🎉 complete
-- **Total:** 55 / 64
+- **Phase 3:** 4 / 4 — 🎉 complete
+- **Total:** 59 / 64

@@ -84,6 +84,20 @@ export type ArchitectureGraph = {
   edges: ServiceEdge[];
 };
 
+/**
+ * Architecture as received from an uploaded JSON file — `position` is optional
+ * here and auto-layout fills any node that omits it (D1). Once auto-laid-out,
+ * the result widens into a regular `ArchitectureGraph` for the store.
+ */
+export type ServiceNodeInput = Omit<ServiceNode, "position"> & {
+  position?: { x: number; y: number; z: number };
+};
+
+export type ArchitectureGraphInput = {
+  nodes: ServiceNodeInput[];
+  edges: ServiceEdge[];
+};
+
 /** Visualization lens applied to the 3D map (PRD §7.6). Phase 1 ships "health". */
 export type ViewMode = "health" | "latency" | "cost" | "traffic" | "incident";
 
