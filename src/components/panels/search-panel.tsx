@@ -31,6 +31,7 @@ export function SearchPanel() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Name, type, owner, region…"
+          aria-label="Search services"
           className="w-full rounded-md border border-border bg-background/60 py-1.5 pl-7 pr-2 text-xs outline-none placeholder:text-muted-foreground focus:border-primary/60"
         />
       </div>

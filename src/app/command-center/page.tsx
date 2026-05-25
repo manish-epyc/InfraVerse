@@ -1,11 +1,5 @@
-import { InfrastructureScene } from "@/components/three/infrastructure-scene";
-import { CommandCenterShell } from "@/components/layout/command-center-shell";
+import { CommandCenterContent } from "@/components/layout/command-center-content";
 
 export default function CommandCenterPage() {
-  return (
-    <div className="relative h-screen w-full overflow-hidden bg-[#0f141b]">
-      <InfrastructureScene />
-      <CommandCenterShell />
-    </div>
-  );
+  return <CommandCenterContent />;
 }

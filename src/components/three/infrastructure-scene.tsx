@@ -11,8 +11,17 @@ export const InfrastructureScene = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-        Loading 3D scene…
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-1.5">
+            <span className="size-1.5 animate-pulse rounded-full bg-primary" />
+            <span className="size-1.5 animate-pulse rounded-full bg-primary [animation-delay:200ms]" />
+            <span className="size-1.5 animate-pulse rounded-full bg-primary [animation-delay:400ms]" />
+          </div>
+          <p className="mt-3 text-xs uppercase tracking-wider text-muted-foreground">
+            Loading command center
+          </p>
+        </div>
       </div>
     ),
   },

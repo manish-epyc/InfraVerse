@@ -1,0 +1,132 @@
+{
+  "nodes": [
+    {
+      "id": "web-app",
+      "name": "Web App",
+      "type": "frontend",
+      "status": "healthy",
+      "owner": "Frontend Team",
+      "region": "us-east-1",
+      "latencyMs": 45,
+      "uptimePercentage": 99.98,
+      "requestsPerSecond": 1200,
+      "errorRatePercentage": 0.02,
+      "costPerHour": 4.5
+    },
+    {
+      "id": "api-gateway",
+      "name": "API Gateway",
+      "type": "api",
+      "status": "healthy",
+      "owner": "Platform Team",
+      "region": "us-east-1",
+      "latencyMs": 30,
+      "uptimePercentage": 99.99,
+      "requestsPerSecond": 1100,
+      "errorRatePercentage": 0.01,
+      "costPerHour": 6.2
+    },
+    {
+      "id": "user-service",
+      "name": "User Service",
+      "type": "service",
+      "status": "healthy",
+      "owner": "Identity Team",
+      "region": "us-east-1",
+      "latencyMs": 55,
+      "uptimePercentage": 99.95,
+      "requestsPerSecond": 480,
+      "errorRatePercentage": 0.05,
+      "costPerHour": 4.0
+    },
+    {
+      "id": "payments",
+      "name": "Payments Service",
+      "type": "service",
+      "status": "warning",
+      "owner": "Payments Team",
+      "region": "us-east-1",
+      "latencyMs": 180,
+      "uptimePercentage": 99.7,
+      "requestsPerSecond": 240,
+      "errorRatePercentage": 1.2,
+      "costPerHour": 7.0
+    },
+    {
+      "id": "postgres",
+      "name": "PostgreSQL",
+      "type": "database",
+      "status": "healthy",
+      "owner": "Data Team",
+      "region": "us-east-1",
+      "latencyMs": 18,
+      "uptimePercentage": 99.99,
+      "requestsPerSecond": 900,
+      "errorRatePercentage": 0.01,
+      "costPerHour": 12.4
+    },
+    {
+      "id": "stripe",
+      "name": "Stripe API",
+      "type": "external",
+      "status": "healthy",
+      "owner": "Payments Team",
+      "region": "us-east-1",
+      "latencyMs": 170,
+      "uptimePercentage": 99.95,
+      "requestsPerSecond": 220,
+      "errorRatePercentage": 0.3,
+      "costPerHour": 1.0
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "web-app",
+      "target": "api-gateway",
+      "trafficRps": 1100,
+      "latencyMs": 30,
+      "errorRatePercentage": 0.01
+    },
+    {
+      "id": "e2",
+      "source": "api-gateway",
+      "target": "user-service",
+      "trafficRps": 480,
+      "latencyMs": 55,
+      "errorRatePercentage": 0.05
+    },
+    {
+      "id": "e3",
+      "source": "api-gateway",
+      "target": "payments",
+      "trafficRps": 240,
+      "latencyMs": 180,
+      "errorRatePercentage": 1.2
+    },
+    {
+      "id": "e4",
+      "source": "user-service",
+      "target": "postgres",
+      "trafficRps": 320,
+      "latencyMs": 18,
+      "errorRatePercentage": 0.01
+    },
+    {
+      "id": "e5",
+      "source": "payments",
+      "target": "postgres",
+      "trafficRps": 200,
+      "latencyMs": 19,
+      "errorRatePercentage": 0.02
+    },
+    {
+      "id": "e6",
+      "source": "payments",
+      "target": "stripe",
+      "trafficRps": 220,
+      "latencyMs": 170,
+      "errorRatePercentage": 0.3
+    }
+  ]
+}

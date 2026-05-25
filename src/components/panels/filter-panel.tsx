@@ -63,6 +63,7 @@ export function FilterPanel() {
             key={status}
             type="button"
             onClick={() => toggleStatus(status)}
+            aria-pressed={statusFilter.includes(status)}
             className={cn(
               chipClass(statusFilter.includes(status)),
               "flex items-center gap-1.5",
@@ -82,6 +83,7 @@ export function FilterPanel() {
             key={type}
             type="button"
             onClick={() => toggleType(type)}
+            aria-pressed={typeFilter.includes(type)}
             className={chipClass(typeFilter.includes(type))}
           >
             {type}
